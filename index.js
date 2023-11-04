@@ -36,7 +36,7 @@ app.get('/get-products', async (req, res) => {
   const connection = await connectionPromise;
 
   try {
-    const products = await connection.all('SELECT * FROM produit');
+    const products = await connection.all('SELECT id_produit as id, nom, chemin_image, prix FROM produit'); // Include id_produit as id
 
     res.json({ products });
   } catch (error) {
@@ -44,7 +44,20 @@ app.get('/get-products', async (req, res) => {
     res.status(500).json({ error: 'Error fetching product data' });
   }
 });
+
 // make a route for delete button on commandes.html
+app.delete('/delete-product/:id', async (req, res) => {
+  const id = parseInt(req.params.id);
+  const connection = await connectionPromise;
+
+  try {
+      await connection.run('DELETE FROM produit WHERE id_produit= ?', [id]);
+      res.sendStatus(200);
+  } catch (error) {
+      console.error('Error deleting product:', error);
+      res.status(500).json({ error: 'Error deleting product' });
+  }
+});
 
 
 app.listen(port, () => {
