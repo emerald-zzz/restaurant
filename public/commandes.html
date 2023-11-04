@@ -65,7 +65,7 @@
             </nav>
             <div class="container-xxl py-5 bg-dark hero-header mb-5">
                 <div class="container text-center my-5 pt-5 pb-4">
-                    <h1 class="display-3 text-white mb-3 animated slideInDown">visionnement de toutes le commandes</h1>
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">visionnement de toutes les commandes</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center text-uppercase">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -79,7 +79,80 @@
         <!-- Navbar & Hero End -->
 
 
-    
+
+
+        <div class="container my-5">
+            <h2>Ajouter un Produit</h2>
+            <form id="product-form" method="post" action="/ajouter-produit" enctype="multipart/form-data">
+                <div class="mb-3">
+                  <label for="nom" class="form-label">Nom du Produit</label>
+                  <input type="text" class="form-control" id="nom" name="nom" required>
+                </div>
+                <div class="mb-3">
+                  <label for="image" class="form-label">l'Image</label>
+                  <input type="file" name="p_image" accept="image/png, image/jpg, image/jpeg" class="box" required>
+                </div>
+                <div class="mb-3">
+                  <label for="prix" class="form-label">Prix</label>
+                  <input type="number" class="form-control" id="prix" name="prix" step="0.01" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Ajouter le Produit</button>
+            </form>
+              
+                        <!-- Add this table in your HTML -->
+            <table id="productTable" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Prix</th>
+                    
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+          
+            
+        </div>
+        
+        <script>
+
+                           
+                    // Function to fetch products from the server and populate the table
+                    async function populateProductTable() {
+                        const response = await fetch('/get-products');
+                        const data = await response.json();
+                    
+                        if (data.products) {
+                        const productTableBody = document.querySelector('#productTable tbody');
+                        productTableBody.innerHTML = '';
+                    
+                        data.products.forEach((product) => {
+                            const row = productTableBody.insertRow();
+                            const idCell = row.insertCell(0);
+                            const nomCell = row.insertCell(1);
+                            const prixCell = row.insertCell(2);
+                            const actionCell = row.insertCell(3);
+                    
+                            idCell.textContent = product.id;
+                            nomCell.textContent = product.nom;
+                            prixCell.textContent = product.prix;
+                    
+                            const deleteButton = document.createElement('button');
+                            deleteButton.textContent = 'Supprimer';
+                            deleteButton.className = 'btn btn-danger';
+                            deleteButton.addEventListener('click', () => deleteProduct(product.id));
+                            actionCell.appendChild(deleteButton);
+                        });
+                        }
+                    }
+                    
+                    
+                    
+                    // Fetch and populate the product table when the page loads
+                    populateProductTable();
+  
+            </script>
        
         <!-- Footer Start -->
         <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
