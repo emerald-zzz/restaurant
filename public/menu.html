@@ -43,41 +43,50 @@
         <!-- Spinner End -->
 
 
-        <!-- Navbar & Hero Start -->
-        <div class="container-xxl position-relative p-0">
-            <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
-                <a href="" class="navbar-brand p-0">
-                    <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>Restoran</h1>
-                    <!-- <img src="img/logo.png" alt="Logo"> -->
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                    <span class="fa fa-bars"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <div class="navbar-nav ms-auto py-0 pe-4">
-                        <a href="index.html" class="nav-item nav-link active">Home</a>
-                        <a href="menu.html" class="nav-item nav-link">Menu</a>
-                        <a href="panier.html" class="nav-item nav-link">panier</a>
-                        <a href="commandes.html" class="nav-item nav-link">commandes</a>
-                    </div>
-                    <a href="" class="btn btn-primary py-2 px-4">Book A Table</a>
-                </div>
-            </nav>
+          <!-- Navbar & Hero Start -->
+       <div class="container-xxl position-relative p-0">
+        <nav
+        class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0"
+      >
+        <a href="" class="navbar-brand p-0">
+          <h1 class="text-primary m-0">
+            <i class="fa fa-utensils me-3"></i>jakop food
+          </h1>
+          <!-- <img src="img/logo.png" alt="Logo"> -->
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarCollapse"
+        >
+          <span class="fa fa-bars"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <div class="navbar-nav ms-auto py-0 pe-4">
+            <a href="index.html" class="nav-item nav-link active">Home</a>
+            <a href="menu.html" class="nav-item nav-link">Menu</a>
+            <a href="panier.html" class="nav-item nav-link">panier</a>
+            <a href="commandes.html" class="nav-item nav-link">commandes</a>
+          </div>
+          <a href="admin.html" class="btn btn-primary py-2 px-4">admin dashboard</a>
+        </div>
+      </nav>
 
-            <div class="container-xxl py-5 bg-dark hero-header mb-5">
-                <div class="container text-center my-5 pt-5 pb-4">
-                    <h1 class="display-3 text-white mb-3 animated slideInDown">Food Menu</h1>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb justify-content-center text-uppercase">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
-                            <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                            <li class="breadcrumb-item text-white active" aria-current="page">Menu</li>
-                        </ol>
-                    </nav>
-                </div>
+        <div class="container-xxl py-5 bg-dark hero-header mb-5">
+            <div class="container text-center my-5 pt-5 pb-4">
+                <h1 class="display-3 text-white mb-3 animated slideInDown">Food Menu</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-center text-uppercase">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                        <li class="breadcrumb-item text-white active" aria-current="page">Menu</li>
+                    </ol>
+                </nav>
             </div>
         </div>
-        <!-- Navbar & Hero End -->
+    </div>
+    <!-- Navbar & Hero End -->
 
 
         <!-- Menu Start -->
@@ -121,77 +130,27 @@
                         <div id="tab-1" class="tab-pane fade show p-0 active">
                             <div class="row g-4">
                                 
-                                <div class="col-lg-6">
-                                    <div class="d-flex align-items-center">
-                                        <img class="flex-shrink-0 img-fluid rounded" src="" alt="" style="width: 80px;" id="product-image">
-                                        <div class="w-100 d-flex flex-column text-start ps-4">
-                                            <h5 class="d-flex justify-content-between border-bottom pb-2">
-                                                <span id="product-name"></span>
-                                                <span class="text-primary" id="product-price"></span>
-                                            </h5>
-                                             <div class="d-flex align-items-center mt-2">
-                                                <div class="quantity">
-                                                    <button class="minus">-</button>
-                                                    <input type="number" step="1" min="1" max="99" id="quantity" name="quantity" value="1">
-                                                    <button class="plus">+</button>
-                                                </div>
-                                                <a href="#" class="btn btn-primary ms-3" id="add-to-cart"><i class="bi bi-cart-plus"></i> Add to Cart</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div id="menu-container" class="container-xxl py-5">
+                                    <!-- Products will be displayed here -->
+                                  </div>
                                 
                             </div>
                         </div>
                         <div id="tab-2" class="tab-pane fade show p-0">
                             <div class="row g-4">
                                 
-                                <div class="col-lg-6">
-                                    <div class="d-flex align-items-center">
-                                        <img class="flex-shrink-0 img-fluid rounded" src="img/menu-1.jpg" alt="" style="width: 80px;">
-                                        <div class="w-100 d-flex flex-column text-start ps-4">
-                                            <h5 class="d-flex justify-content-between border-bottom pb-2">
-                                                <span>Chicken Burger</span>
-                                                <span class="text-primary">$115</span>
-                                            </h5>
-                                            <small class="fst-italic">Ipsum ipsum clita erat amet dolor justo diam</small>
-                                            <div class="d-flex align-items-center mt-2">
-                                                <div class="quantity">
-                                                    <button class="minus">-</button>
-                                                    <input type="number" step="1" min="1" max="99" id="quantity1" name="quantity" value="1">
-                                                    <button class="plus">+</button>
-                                                </div>
-                                                <a href="#" class="btn btn-primary ms-3"><i class="bi bi-cart-plus"></i> Add to Cart</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div id="menu-container" class="container-xxl py-5">
+                                    <!-- Products will be displayed here -->
+                                  </div>
                                   
                             </div>
                         </div>
                         <div id="tab-3" class="tab-pane fade show p-0">
                             <div class="row g-4">
                                 
-                                <div class="col-lg-6">
-                                    <div class="d-flex align-items-center">
-                                        <img class="flex-shrink-0 img-fluid rounded" src="img/menu-1.jpg" alt="" style="width: 80px;">
-                                        <div class="w-100 d-flex flex-column text-start ps-4">
-                                            <h5 class="d-flex justify-content-between border-bottom pb-2">
-                                                <span>Chicken Burger</span>
-                                                <span class="text-primary">$115</span>
-                                            </h5>
-                                            <small class="fst-italic">Ipsum ipsum clita erat amet dolor justo diam</small>
-                                            <div class="d-flex align-items-center mt-2">
-                                                <div class="quantity">
-                                                    <button class="minus">-</button>
-                                                    <input type="number" step="1" min="1" max="99" id="quantity1" name="quantity" value="1">
-                                                    <button class="plus">+</button>
-                                                </div>
-                                                <a href="#" class="btn btn-primary ms-3"><i class="bi bi-cart-plus"></i> Add to Cart</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div id="menu-container" class="container-xxl py-5">
+                                    <!-- Products will be displayed here -->
+                                  </div>
 
                             </div>
                         </div>
@@ -202,25 +161,82 @@
         <!-- Menu End -->
         <script>
             // JavaScript for quantity counter
-            document.querySelectorAll('.quantity').forEach(function (quantity) {
-                const input = quantity.querySelector('input[type="number"]');
-                const plusBtn = quantity.querySelector('.plus');
-                const minusBtn = quantity.querySelector('.minus');
-        
-                plusBtn.addEventListener('click', function () {
-                    if (input.value < 99) {
-                        input.value = parseInt(input.value) + 1;
-                    }
-                });
-        
-                minusBtn.addEventListener('click', function () {
-                    if (input.value > 1) {
-                        input.value = parseInt(input.value) - 1;
-                    }
-                });
-            });
-  
-        </script>
+            function setupQuantityCounter(productDiv) {
+              const minusButton = productDiv.querySelector(".minus");
+              const plusButton = productDiv.querySelector(".plus");
+              const quantityInput = productDiv.querySelector('input[name="quantity"]');
+          
+              minusButton.addEventListener("click", function () {
+                if (quantityInput.value > 1) {
+                  quantityInput.value = parseInt(quantityInput.value) - 1;
+                }
+              });
+          
+              plusButton.addEventListener("click", function () {
+                if (quantityInput.value < 99) {
+                  quantityInput.value = parseInt(quantityInput.value) + 1;
+                }
+              });
+            }
+
+            
+               
+              
+          
+            // Function to fetch product data from the server
+            async function fetchProducts() {
+              try {
+                const response = await fetch('/get-products'); // Make an HTTP GET request to the server
+                if (response.ok) {
+                  const data = await response.json();
+                  const products = data.products;
+          
+                  const menuContainer = document.getElementById('menu-container');
+          
+                  products.forEach((product) => {
+                    const productDiv = document.createElement('div');
+                    productDiv.classList.add('col-lg-6');
+          
+                    productDiv.innerHTML = `
+                      <div class="d-flex align-items-center">
+                        <img class="flex-shrink-0 img-fluid rounded" src="uploads/${product.nom}.jpg" alt="${product.nom}" style="width: 80px;">
+                        <div class="w-100 d-flex flex-column text-start ps-4">
+                          <h5 class="d-flex justify-content-between border-bottom pb-2">
+                            <span>${product.nom}</span>
+                            <span class="text-primary">$${product.prix}</span>
+                          </h5>
+                          <small class="fst-italic">details...</small>
+                          <div class="d-flex align-items-center mt-2">
+                            <div class="quantity">
+                              <button class="minus">-</button>
+                              <input type="number" step="1" min="1" max="99" name="quantity" value="1">
+                              <button class="plus">+</button>
+                            </div>
+                            
+                            <a class="btn btn-primary ms-3" onclick="addToCart(${product.id}, this.previousElementSibling.querySelector('input[name=\"quantity\"]').value)"><i class="bi bi-cart-plus"></i> Add to Cart</a>
+
+                          </div>
+                        </div>
+                      </div>
+                    `;
+          
+                    menuContainer.appendChild(productDiv);
+          
+                    // Initialize the quantity counter for this product
+                    setupQuantityCounter(productDiv);
+                  });
+                } else {
+                  console.error('Error fetching product data');
+                }
+              } catch (error) {
+                console.error('Error fetching product data:', error);
+              }
+            }
+          
+            // Call the function to fetch and display products when the page loads
+            window.addEventListener('load', fetchProducts);
+          </script>
+          
         
         <!-- Footer Start -->
         <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
@@ -306,6 +322,7 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+    
 </body>
 
 </html>

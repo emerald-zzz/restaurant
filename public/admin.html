@@ -92,7 +92,7 @@
         <div class="container-xxl py-5 bg-dark hero-header mb-5">
           <div class="container text-center my-5 pt-5 pb-4">
             <h1 class="display-3 text-white mb-3 animated slideInDown">
-              visionnement de toutes les commandes
+              gestion des produits
             </h1>
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb justify-content-center text-uppercase">
@@ -111,21 +111,120 @@
       </div>
       <!-- Navbar & Hero End -->
 
-          <div class="container my-5">
-            <!-- Add this table in your HTML -->
-            <table id="commandeTable" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Prix</th>
-                        <th>Quantité</th>
-                        <th>État</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+      <div class="container my-5">
+        <h2>Ajouter un Produit</h2>
+        <form
+          id="product-form"
+          method="post"
+          action="/ajouter-produit"
+          enctype="multipart/form-data"
+        >
+          <div class="mb-3">
+            <label for="nom" class="form-label">Nom du Produit</label>
+            <input
+              type="text"
+              class="form-control"
+              id="nom"
+              name="nom"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="image" class="form-label">l'Image</label>
+            <input
+              type="file"
+              name="p_image"
+              accept="image/png, image/jpg, image/jpeg"
+              class="box"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="prix" class="form-label">Prix</label>
+            <input
+              type="number"
+              class="form-control"
+              id="prix"
+              name="prix"
+              step="0.01"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">
+            Ajouter le Produit
+          </button>
+        </form>
+
+        <!-- Add this table in your HTML -->
+        <table id="productTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Prix</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
         
+      </div>
+
+      <script>
+        // Function to fetch products from the server and populate the table
+        async function populateProductTable() {
+    const response = await fetch('/get-products');
+    const data = await response.json();
+    console.log(data);
+    if (data.products) {
+        const productTableBody = document.querySelector('#productTable tbody');
+        productTableBody.innerHTML = '';
+
+        data.products.forEach((product) => {
+            const row = productTableBody.insertRow();
+            const idCell = row.insertCell(0);
+            const nomCell = row.insertCell(1);
+            const prixCell = row.insertCell(2);
+            const actionCell = row.insertCell(3);
+
+            idCell.textContent = product.id;
+            nomCell.textContent = product.nom;
+            prixCell.textContent = product.prix;
+
+            const deleteButton = document.createElement('button');
+            console.log('Product ID:', product.id);
+
+deleteButton.textContent = 'Supprimer';
+deleteButton.className = 'btn btn-danger';
+deleteButton.dataset.productId = product.id; // Store the product id as a data attribute
+deleteButton.addEventListener('click', () => deleteProduct(deleteButton.dataset.productId));
+actionCell.appendChild(deleteButton);
+
+        });
+    }
+}
+async function deleteProduct(id) {
+  try {
+    console.log('Deleting product with ID:', id);
+    const response = await fetch(`/delete-product/${id}`, {
+      method: 'DELETE'
+    });
+
+    if (response.ok) {
+      // If the response is successful, refresh the table
+      populateProductTable();
+    } else {
+      console.error('Error deleting product: Server returned an error');
+    }
+  } catch (error) {
+    console.error('Error deleting product:', error);
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    populateProductTable();
+});
+
+ </script>
 
       <!-- Footer Start -->
       <div
@@ -231,6 +330,7 @@
                   >ThemeWagon</a
                 >
               </div>
+              
               <div class="col-md-6 text-center text-md-end">
                 <div class="footer-menu">
                   <a href="">Home</a>

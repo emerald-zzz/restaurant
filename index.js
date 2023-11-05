@@ -7,7 +7,7 @@ const multer = require('multer');
 
 // Define a storage engine that stores the file with a custom name
 const storage = multer.diskStorage({
-  destination: 'uploads/',
+  destination: 'public/uploads/',
   filename: (req, file, cb) => {
     // Use the product name to create a unique filename
     const uniqueFileName = `${req.body.nom}.jpg`;
@@ -45,7 +45,7 @@ app.get('/get-products', async (req, res) => {
   }
 });
 
-// make a route for delete button on commandes.html
+// make a route for delete button on admin.html
 app.delete('/delete-product/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   const connection = await connectionPromise;
