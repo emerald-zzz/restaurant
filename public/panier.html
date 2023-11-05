@@ -91,7 +91,7 @@
 
         <div class="container my-5">
             <!-- Add this table in your HTML -->
-            <table id="commandeTable" class="table table-striped">
+            <table id="panierTable" class="table table-striped">
                 <thead>
                     <tr>
                         <th>Nom</th>
@@ -104,8 +104,48 @@
             </table>
         </div>
 
-    
-          
+          <script>
+            document.addEventListener('DOMContentLoaded', async function() {
+  try {
+    const response = await fetch('/get-cart');
+    if (response.ok) {
+      const data = await response.json();
+      const cart = data.cart;
+      // Code to populate the cart table with the cart data
+      const panierTable = document.querySelector('#panierTable tbody');
+      cart.forEach(function(item) {
+        const row = panierTable.insertRow();
+        const nomCell = row.insertCell(0);
+        const prixCell = row.insertCell(1);
+        const quantiteCell = row.insertCell(2);
+        const actionCell = row.insertCell(3);
+
+        nomCell.textContent = item.name;
+        prixCell.textContent = item.price;
+        quantiteCell.textContent = item.quantity;
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Supprimer';
+        deleteButton.className = 'btn btn-danger';
+        deleteButton.addEventListener('click', () => deleteCartItem(row));
+        actionCell.appendChild(deleteButton);
+    });
+    } else {
+      console.error('Error fetching cart data:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error fetching cart data:', error);
+  }
+});
+function deleteCartItem(row) {
+    try {
+        row.remove();
+    } catch (error) {
+        console.error('Error deleting product:', error);
+    }
+}
+
+          </script>
 
 
         <!-- Footer Start -->
@@ -177,7 +217,7 @@
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
     </div>
-
+    
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>

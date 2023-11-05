@@ -160,6 +160,7 @@
         </div>
         <!-- Menu End -->
         <script>
+          
             // JavaScript for quantity counter
             function setupQuantityCounter(productDiv) {
               const minusButton = productDiv.querySelector(".minus");
@@ -213,7 +214,9 @@
                               <button class="plus">+</button>
                             </div>
                             
-                            <a class="btn btn-primary ms-3" onclick="addToCart(${product.id}, this.previousElementSibling.querySelector('input[name=\"quantity\"]').value)"><i class="bi bi-cart-plus"></i> Add to Cart</a>
+                            <a class="btn btn-primary ms-3 add-to-cart-button" data-product-id="${product.id}">
+                             <i class="bi bi-cart-plus"></i> Add to Cart
+                        </a>
 
                           </div>
                         </div>
@@ -232,11 +235,48 @@
                 console.error('Error fetching product data:', error);
               }
             }
-          
+           
             // Call the function to fetch and display products when the page loads
             window.addEventListener('load', fetchProducts);
           </script>
-          
+           <script>
+            document.addEventListener('click', (event) => {
+        console.log('Clicked:', event.target);
+        if (event.target.matches('.add-to-cart-button')) {
+            const quantityInput = event.target.parentElement.querySelector('input[name="quantity"]');
+            addToCart(event.target.dataset.productId, quantityInput.value);
+        }
+    });
+    
+    
+    
+    async function addToCart(productId, quantity) {
+  try {
+    const response = await fetch('/add-to-cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        productId: productId,
+        quantity: quantity
+      })
+    });
+    if (response.ok) {
+      const data = await response.json();
+      alert(data.message); // Show success message
+    } else {
+      console.error('Error adding product to cart:', response.statusText);
+      alert('Error adding product to cart');
+    }
+  } catch (error) {
+    console.error('Error adding product to cart:', error);
+    alert('Error adding product to cart');
+  }
+}
+
+        </script>
+       
         
         <!-- Footer Start -->
         <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
