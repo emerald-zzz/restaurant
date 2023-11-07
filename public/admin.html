@@ -194,14 +194,14 @@
             const deleteButton = document.createElement('button');
             console.log('Product ID:', product.id);
 
-deleteButton.textContent = 'Supprimer';
-deleteButton.className = 'btn btn-danger';
-deleteButton.dataset.productId = product.id; // Store the product id as a data attribute
-deleteButton.addEventListener('click', () => deleteProduct(deleteButton.dataset.productId));
-actionCell.appendChild(deleteButton);
+            deleteButton.textContent = 'Supprimer';
+            deleteButton.className = 'btn btn-danger';
+            deleteButton.dataset.productId = product.id; // Store the product id as a data attribute
+            deleteButton.addEventListener('click', () => deleteProduct(deleteButton.dataset.productId));
+            actionCell.appendChild(deleteButton);
 
         });
-    }
+      }
 }
 async function deleteProduct(id) {
   try {

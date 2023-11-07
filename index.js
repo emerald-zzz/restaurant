@@ -67,7 +67,7 @@ app.get('/get-cart', (req, res) => {
   res.json({ cart });
 });
 
-// Endpoint to add a product to the cart
+
 // Endpoint to add a product to the cart
 app.post('/add-to-cart', async (req, res) => {
   const { productId, quantity } = req.body;
@@ -98,6 +98,51 @@ app.post('/remove-from-cart', (req, res) => {
   cart = cart.filter(item => item.id !== productId);
   res.json({ message: 'Product removed from cart successfully' });
 });
+// Endpoint to get order data
+app.get('/add-cart-as-command', async (req, res) => {
+  try {
+      const connection = await connectionPromise;
+      const orders = await connection.all(`
+          SELECT cp.quantite, p.id_produit as id, p.nom, p.prix, c.id_etat_commande as etat
+          FROM commande_produit cp
+          INNER JOIN produit p ON cp.id_produit = p.id_produit
+          INNER JOIN commande c ON cp.id_commande = c.id_commande
+      `);
+      res.json({ orders });
+  } catch (error) {
+      console.error('Error fetching order data:', error);
+      res.status(500).json({ error: 'Error fetching order data' });
+  }
+});
+
+// Endpoint to update the state of an order
+app.put('/update-order-state/:id', async (req, res) => {
+  const orderId = parseInt(req.params.id);
+  const { newState } = req.body;
+
+  try {
+      const connection = await connectionPromise;
+      await connection.run('UPDATE commande SET nom = ? WHERE id_commande = ?', [newState, orderId]);
+      res.sendStatus(200);
+  } catch (error) {
+      console.error('Error updating order state:', error);
+      res.status(500).json({ error: 'Error updating order state' });
+  }
+});
+// Endpoint to delete an order
+app.delete('/delete-order/:id', async (req, res) => {
+    const orderId = parseInt(req.params.id);
+    
+    try {
+        const connection = await connectionPromise;
+        await connection.run('DELETE FROM commande WHERE id_commande = ?', [orderId]);
+        res.sendStatus(200);
+    } catch (error) {
+        console.error('Error deleting order:', error);
+        res.status(500).json({ error: 'Error deleting order' });
+    }
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });

@@ -102,6 +102,7 @@
                 </thead>
                 <tbody></tbody>
             </table>
+           <button id="ajouterCommandeButton" class="btn btn-primary">Ajouter la commande</button>
         </div>
 
           <script>
@@ -145,6 +146,67 @@ function deleteCartItem(row) {
     }
 }
 
+
+    document.addEventListener('DOMContentLoaded', async function () {
+      try {
+        const response = await fetch('/get-cart');
+        if (response.ok) {
+          const data = await response.json();
+          const cart = data.cart;
+  
+          const panierTable = document.querySelector('#panierTable tbody');
+          cart.forEach(function (item) {
+            const row = panierTable.insertRow();
+            const nomCell = row.insertCell(0);
+            const prixCell = row.insertCell(1);
+            const quantiteCell = row.insertCell(2);
+            const actionCell = row.insertCell(3);
+  
+            nomCell.textContent = item.name;
+            prixCell.textContent = item.price;
+            quantiteCell.textContent = item.quantity;
+  
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Supprimer';
+            deleteButton.className = 'btn btn-danger';
+            deleteButton.addEventListener('click', () => deleteCartItem(row));
+            actionCell.appendChild(deleteButton);
+          });
+        } else {
+          console.error('Error fetching cart data:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching cart data:', error);
+      }
+    });
+  
+    // Function to add the cart as a command
+    document.getElementById('ajouterCommandeButton').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/add-cart-as-command', {
+          method: 'POST',
+        });
+  
+        if (response.ok) {
+          
+          alert('Cart added as a command successfully.');
+        } else {
+          console.error('Error adding cart as a command:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error adding cart as a command:', error);
+      }
+    });
+  
+    function deleteCartItem(row) {
+      try {
+        row.remove();
+      } catch (error) {
+        console.error('Error deleting product:', error);
+      }
+    }
+ 
+  
           </script>
 
 

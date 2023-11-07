@@ -111,22 +111,141 @@
       </div>
       <!-- Navbar & Hero End -->
 
-          <div class="container my-5">
-            <!-- Add this table in your HTML -->
-            <table id="commandeTable" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Prix</th>
-                        <th>Quantité</th>
-                        <th>État</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+      <div class="container my-5">
+        <h1>Liste des Commandes</h1>
+        <!-- table -->
+        <table id="commandeTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prix</th>
+                    <th>Quantité</th>
+                    <th>État</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', async function () {
+        // Function to fetch and display orders
+        async function populateCommandeTable() {
+            try {
+                const response = await fetch('/add-cart-as-command');
+                if (response.ok) {
+                    const data = await response.json();
+                    const orders = data.orders;
+    
+                    const commandeTable = document.querySelector('#commandeTable tbody');
+                    commandeTable.innerHTML = '';
+    
+                    orders.forEach(function (order) {
+                        const row = commandeTable.insertRow();
+                        const nomCell = row.insertCell(0);
+                        const prixCell = row.insertCell(1);
+                        const quantiteCell = row.insertCell(2);
+                        const etatCell = row.insertCell(3);
+                        const actionCell = row.insertCell(4); // Add the action cell
+    
+                        nomCell.textContent = order.nom;
+                        prixCell.textContent = order.prix;
+                        quantiteCell.textContent = order.quantite;
+    
+                        const select = document.createElement('select');
+                        select.name = 'etat';
+                        select.id = 'etat';
+                        select.dataset.orderId = order.id; // Store the order ID as a data attribute
+    
+                        const etats = ['En Cuisine', 'En Livraison', 'Terminée'];
+                        etats.forEach((etat) => {
+                            const option = document.createElement('option');
+                            option.value = etat;
+                            option.text = etat;
+                            select.appendChild(option);
+                        });
+    
+                        // Set the selected option based on the order's current state
+                        select.value = order.etat;
+    
+                        select.addEventListener('change', () => changeOrderState(select));
+    
+                        etatCell.appendChild(select);
+    
+                        // Add a "Supprimer" (Delete) button
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Supprimer';
+                        deleteButton.className = 'btn btn-danger';
+                        deleteButton.dataset.orderId = order.id; // Store the order ID as a data attribute
+                        deleteButton.addEventListener('click', () => deleteOrder(deleteButton));
+                        actionCell.appendChild(deleteButton);
+                        const saveButton = document.createElement('button');
+                        saveButton.textContent = 'save';
+                        saveButton.className="btn btn-primary";
+                        saveButton.addEventListener('click',() => changeOrderState(select));
+                        actionCell.appendChild(saveButton);
+                    });
+                } else {
+                    console.error('Error fetching order data:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching order data:', error);
+            }
+        }
+    
+        // Call the function to fetch and display orders when the page loads
+        populateCommandeTable();
+    
         
+    });
 
+    // Function to change the state of an order
+    async function changeOrderState(select) {
+      const orderId = select.dataset.orderId;
+      const newState = select.value;
+
+      try {
+          const response = await fetch(`/update-order-state/${orderId}`, {
+              method: 'PUT',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ newState }),
+          });
+
+          if (response.ok) {
+              // Handle the successful state change
+              alert('Order state updated successfully.');
+          } else {
+              console.error('Error updating order state:', response.statusText);
+          }
+      } catch (error) {
+          console.error('Error updating order state:', error);
+      }
+  }
+  // Function to delete an order
+  async function deleteOrder(deleteButton) {
+      const orderId = deleteButton.dataset.orderId;
+
+      try {
+          const response = await fetch(`/delete-order/${orderId}`, {
+              method: 'DELETE',
+          });
+
+          if (response.ok) {
+              // Handle the successful order deletion
+              alert('Order deleted successfully.');
+              // You may want to refresh the table or update the UI as needed.
+          } else {
+              console.error('Error deleting order:', response.statusText);
+          }
+      } catch (error) {
+          console.error('Error deleting order:', error);
+      }
+  }
+    </script>
+    
       <!-- Footer Start -->
       <div
         class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn"
