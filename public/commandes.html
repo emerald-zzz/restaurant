@@ -117,6 +117,7 @@
         <table id="commandeTable" class="table table-striped">
             <thead>
                 <tr>
+                  <th>id</th>
                     <th>Nom</th>
                     <th>Prix</th>
                     <th>Quantité</th>
@@ -129,121 +130,99 @@
     </div>
     
     <script>
-    document.addEventListener('DOMContentLoaded', async function () {
-        // Function to fetch and display orders
-        async function populateCommandeTable() {
-            try {
-                const response = await fetch('/add-cart-as-command');
-                if (response.ok) {
-                    const data = await response.json();
-                    const orders = data.orders;
+      document.addEventListener('DOMContentLoaded', async function () {
+        try {
+            const response = await fetch('/get-commandes');
+            if (response.ok) {
+                const data = await response.json();
+                const commandes = data.commandes;
     
-                    const commandeTable = document.querySelector('#commandeTable tbody');
-                    commandeTable.innerHTML = '';
+                const commandeTable = document.querySelector('#commandeTable tbody');
+                let currentCommandId = null; // Pour suivre l'ID de la commande actuelle
     
-                    orders.forEach(function (order) {
-                        const row = commandeTable.insertRow();
-                        const nomCell = row.insertCell(0);
-                        const prixCell = row.insertCell(1);
-                        const quantiteCell = row.insertCell(2);
-                        const etatCell = row.insertCell(3);
-                        const actionCell = row.insertCell(4); // Add the action cell
+                commandes.forEach(function (commande) {
+                    if (commande.id_commande !== currentCommandId) {
+                        // Nouvelle commande, ajoutez une ligne d'en-tête
+                        const headerRow = commandeTable.insertRow();
+                        const headerCell = headerRow.insertCell(0);
+                        headerCell.colSpan = 6; // Fusionnez sur les 6 colonnes
+                        headerCell.textContent = `Order: ${commande.id_commande}`;
+                        currentCommandId = commande.id_commande;
+                    }
     
-                        nomCell.textContent = order.nom;
-                        prixCell.textContent = order.prix;
-                        quantiteCell.textContent = order.quantite;
+                    // Ajoutez une ligne pour chaque produit de la commande
+                    const row = commandeTable.insertRow();
+                    const idCell = row.insertCell(0);
+                    const nomCell = row.insertCell(1);
+                    const prixCell = row.insertCell(2);
+                    const quantiteCell = row.insertCell(3);
+                    const etatCell = row.insertCell(4); // This cell will contain the dropdown
+
+   // Create the select dropdown for etatCell
+const select = document.createElement('select');
+select.name = 'etat_commande';
+select.className = 'form-control';
+
+// Add options for state names
+const stateNames = ["panier", "cuisine", "livraison", "terminer"];
+stateNames.forEach((stateName, index) => {
+    const option = document.createElement('option');
+    option.value = index + 1; // Use 1-based indexing
+    option.textContent = stateName;
+    select.appendChild(option);
+});
+
+etatCell.appendChild(select);
+
+
+                    const actionCell = row.insertCell(5);
     
-                        const select = document.createElement('select');
-                        select.name = 'etat';
-                        select.id = 'etat';
-                        select.dataset.orderId = order.id; // Store the order ID as a data attribute
-    
-                        const etats = ['En Cuisine', 'En Livraison', 'Terminée'];
-                        etats.forEach((etat) => {
-                            const option = document.createElement('option');
-                            option.value = etat;
-                            option.text = etat;
-                            select.appendChild(option);
-                        });
-    
-                        // Set the selected option based on the order's current state
-                        select.value = order.etat;
-    
-                        select.addEventListener('change', () => changeOrderState(select));
-    
-                        etatCell.appendChild(select);
-    
-                        // Add a "Supprimer" (Delete) button
-                        const deleteButton = document.createElement('button');
-                        deleteButton.textContent = 'Supprimer';
-                        deleteButton.className = 'btn btn-danger';
-                        deleteButton.dataset.orderId = order.id; // Store the order ID as a data attribute
-                        deleteButton.addEventListener('click', () => deleteOrder(deleteButton));
-                        actionCell.appendChild(deleteButton);
-                        const saveButton = document.createElement('button');
-                        saveButton.textContent = 'save';
-                        saveButton.className="btn btn-primary";
-                        saveButton.addEventListener('click',() => changeOrderState(select));
-                        actionCell.appendChild(saveButton);
-                    });
-                } else {
-                    console.error('Error fetching order data:', response.statusText);
-                }
-            } catch (error) {
-                console.error('Error fetching order data:', error);
+                    idCell.textContent = commande.id;
+                    nomCell.textContent = commande.nom;
+                    prixCell.textContent = commande.prix;
+                    quantiteCell.textContent = commande.quantite;
+                    
+                    // Bouton de sauvgard
+                    const saveButton = document.createElement('button');
+                    saveButton.textContent = 'save';
+                    saveButton.className = 'btn btn-primary';
+                    saveButton.addEventListener('click', () => saveCommande(commande.id_commande)); // Appel de la fonction de sauvgarde
+                    actionCell.appendChild(saveButton);
+
+
+                    // Bouton de suppression
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Supprimer';
+                    deleteButton.className = 'btn btn-danger';
+                    deleteButton.addEventListener('click', () => deleteCommande(commande.id_commande)); // Appel de la fonction de suppression
+                    actionCell.appendChild(deleteButton);
+
+                });
+            } else {
+                console.error('Erreur lors de la récupération des données de la commande:', response.statusText);
             }
+        } catch (error) {
+            console.error('Erreur lors de la récupération des données de la commande:', error);
         }
-    
-        // Call the function to fetch and display orders when the page loads
-        populateCommandeTable();
-    
-        
     });
-
-    // Function to change the state of an order
-    async function changeOrderState(select) {
-      const orderId = select.dataset.orderId;
-      const newState = select.value;
-
+    async function deleteCommande(commandeId) {
       try {
-          const response = await fetch(`/update-order-state/${orderId}`, {
-              method: 'PUT',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ newState }),
-          });
-
-          if (response.ok) {
-              // Handle the successful state change
-              alert('Order state updated successfully.');
-          } else {
-              console.error('Error updating order state:', response.statusText);
-          }
+        const response = await fetch(`/delete-commande/${commandeId}`, {
+          method: 'DELETE',
+        });
+    
+        if (response.ok) {
+          // Rafraîchir le tableau après la suppression
+          // Vous pouvez ajouter ici le code pour rafraîchir le tableau
+          alert('Commande supprimée avec succès.');
+        } else {
+          console.error('Erreur lors de la suppression de la commande:', response.statusText);
+        }
       } catch (error) {
-          console.error('Error updating order state:', error);
+        console.error('Erreur lors de la suppression de la commande:', error);
       }
-  }
-  // Function to delete an order
-  async function deleteOrder(deleteButton) {
-      const orderId = deleteButton.dataset.orderId;
-
-      try {
-          const response = await fetch(`/delete-order/${orderId}`, {
-              method: 'DELETE',
-          });
-
-          if (response.ok) {
-              // Handle the successful order deletion
-              alert('Order deleted successfully.');
-              // You may want to refresh the table or update the UI as needed.
-          } else {
-              console.error('Error deleting order:', response.statusText);
-          }
-      } catch (error) {
-          console.error('Error deleting order:', error);
-      }
-  }
+    }
+    
     </script>
     
       <!-- Footer Start -->

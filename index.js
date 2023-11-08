@@ -98,50 +98,78 @@ app.post('/remove-from-cart', (req, res) => {
   cart = cart.filter(item => item.id !== productId);
   res.json({ message: 'Product removed from cart successfully' });
 });
-// Endpoint to get order data
-app.get('/add-cart-as-command', async (req, res) => {
-  try {
-      const connection = await connectionPromise;
-      const orders = await connection.all(`
-          SELECT cp.quantite, p.id_produit as id, p.nom, p.prix, c.id_etat_commande as etat
-          FROM commande_produit cp
-          INNER JOIN produit p ON cp.id_produit = p.id_produit
-          INNER JOIN commande c ON cp.id_commande = c.id_commande
-      `);
-      res.json({ orders });
-  } catch (error) {
-      console.error('Error fetching order data:', error);
-      res.status(500).json({ error: 'Error fetching order data' });
-  }
-});
 
-// Endpoint to update the state of an order
-app.put('/update-order-state/:id', async (req, res) => {
-  const orderId = parseInt(req.params.id);
-  const { newState } = req.body;
+// Endpoint pour ajouter le panier en tant que commande
+app.post('/add-cart-as-command', async (req, res) => {
+  const userId = 1; // Utilisateur ayant l'ID 1 (à adapter à vos besoins)
+  const currentDate = Date.now(); // Date actuelle (en millisecondes depuis l'époque)
+
+  const connection = await connectionPromise;
 
   try {
-      const connection = await connectionPromise;
-      await connection.run('UPDATE commande SET nom = ? WHERE id_commande = ?', [newState, orderId]);
-      res.sendStatus(200);
-  } catch (error) {
-      console.error('Error updating order state:', error);
-      res.status(500).json({ error: 'Error updating order state' });
-  }
-});
-// Endpoint to delete an order
-app.delete('/delete-order/:id', async (req, res) => {
-    const orderId = parseInt(req.params.id);
-    
-    try {
-        const connection = await connectionPromise;
-        await connection.run('DELETE FROM commande WHERE id_commande = ?', [orderId]);
-        res.sendStatus(200);
-    } catch (error) {
-        console.error('Error deleting order:', error);
-        res.status(500).json({ error: 'Error deleting order' });
+    // 1. Insérez une nouvelle commande dans la table `commande`
+    const result = await connection.run('INSERT INTO commande (id_utilisateur, id_etat_commande, date) VALUES (?, ?, ?)', [userId, 1, currentDate]);
+
+    // Obtenez l'ID de la commande nouvellement insérée
+    const newCommandId = result.lastID;
+
+    // 2. Parcourez les produits du panier et insérez-les dans la table `commande_produit`
+    for (const product of cart) {
+      await connection.run('INSERT INTO commande_produit (id_commande, id_produit, quantite) VALUES (?, ?, ?)', [newCommandId, product.id, product.quantity]);
     }
+
+    res.json({ message: 'Panier ajouté en tant que commande avec succès.' });
+  } catch (error) {
+    console.error('Erreur lors de lajout du panier en tant que commande:', error);
+    res.status(500).json({ error: 'Erreur lors de lajout du panier en tant que commande' });
+  }
 });
+
+// Endpoint pour récupérer les données de la commande
+app.get('/get-commandes', async (req, res) => {
+  try {
+    const connection = await connectionPromise;
+
+    const commandes = await connection.all(`
+      SELECT cp.id_commande, p.nom, p.prix, cp.quantite, ec.nom AS etat
+      FROM commande_produit cp
+      INNER JOIN produit p ON cp.id_produit = p.id_produit
+      INNER JOIN etat_commande ec ON ec.id_etat_commande = 1
+    `);
+
+    res.json({ commandes });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données de la commande:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des données de la commande' });
+  }
+
+});
+
+
+// Endpoint pour supprimer une commande
+app.delete('/delete-commande/:id', async (req, res) => {
+  const commandeId = parseInt(req.params.id);
+
+  try {
+    const connection = await connectionPromise;
+    
+    // Supprimez d'abord les produits liés à la commande dans la table `commande_produit`
+    await connection.run('DELETE FROM commande_produit WHERE id_commande = ?', [commandeId]);
+    
+    // Ensuite, supprimez la commande elle-même de la table `commande`
+    await connection.run('DELETE FROM commande WHERE id_commande = ?', [commandeId]);
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error('Erreur lors de la suppression de la commande:', error);
+    res.status(500).json({ error: 'Erreur lors de la suppression de la commande' });
+  }
+});
+
+
+
+
+
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
