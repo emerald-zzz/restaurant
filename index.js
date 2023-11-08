@@ -189,6 +189,30 @@ app.post('/update-commande-state', async (req, res) => {
   }
 });
 
+app.get('/get-etat-commande/:commandeId', async (req, res) => {
+  const { commandeId } = req.params;
+
+  try {
+      const connection = await connectionPromise;
+
+      const row = await connection.get(`
+          SELECT id_etat_commande
+          FROM commande
+          WHERE id_commande = ?
+      `, [commandeId]);
+
+      if (!row) {
+          throw new Error('Invalid commande ID');
+      }
+
+      const currentEtat = row.id_etat_commande;
+
+      res.json({ currentEtat });
+  } catch (error) {
+      console.error('Error retrieving current etat:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
 

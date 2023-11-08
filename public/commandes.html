@@ -136,11 +136,11 @@
             if (response.ok) {
                 const data = await response.json();
                 const commandes = data.commandes;
-    
+
                 const commandeTable = document.querySelector('#commandeTable tbody');
                 let currentCommandId = null; // Pour suivre l'ID de la commande actuelle
     
-                commandes.forEach(function (commande) {
+                commandes.forEach(async function (commande) {
                     if (commande.id_commande !== currentCommandId) {
                         // Nouvelle commande, ajoutez une ligne d'en-tête
                         const headerRow = commandeTable.insertRow();
@@ -158,22 +158,51 @@
                     const quantiteCell = row.insertCell(3);
                     const etatCell = row.insertCell(4); // This cell will contain the dropdown
 
-   // Create the select dropdown for etatCell
+   // Assuming that you are passing `id_etat_command` along with other data
+// when generating the HTML on the server side
+/* 
 const select = document.createElement('select');
 select.name = `etat_commande_${commande.id_commande}`;
 select.className = 'form-control';
 
-// Add options for state names
 const stateNames = ["panier", "cuisine", "livraison", "terminer"];
 stateNames.forEach((stateName, index) => {
     const option = document.createElement('option');
-    option.value = index + 1; // Use 1-based indexing
+    option.value = index + 1;
     option.textContent = stateName;
+
+    // Check if this option matches the id_etat_command
+    if (stateName === commande.etat) {
+        option.selected = true;
+    }
+
     select.appendChild(option);
 });
+ 
+etatCell.appendChild(select);*/
+const select = document.createElement('select');
+    select.name = `etat_commande_${commande.id_commande}`;
+    select.className = 'form-control';
 
-etatCell.appendChild(select);
+    // Add options for state names
+    const stateNames = ["panier", "cuisine", "livraison", "terminer"];
+    for (let i = 0; i < stateNames.length; i++) {
+        const option = document.createElement('option');
+        option.value = i + 1; // Use 1-based indexing
+        option.textContent = stateNames[i];
 
+        select.appendChild(option);
+    }
+
+    // Fetch the current state for the commande
+    const response = await fetch(`/get-etat-commande/${commande.id_commande}`);
+    const data = await response.json();
+    const currentEtat = data.currentEtat;
+
+    // Set the default selected option based on the current state
+    select.value = currentEtat;
+
+    etatCell.appendChild(select);
 
                     const actionCell = row.insertCell(5);
     
@@ -245,6 +274,7 @@ etatCell.appendChild(select);
         } else {
             alert('Error updating commande state');
         }
+        location.reload(); // Reload the page
     } catch (error) {
         console.error('Error updating commande state:', error);
     }
