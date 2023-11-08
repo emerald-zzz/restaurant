@@ -160,7 +160,7 @@
 
    // Create the select dropdown for etatCell
 const select = document.createElement('select');
-select.name = 'etat_commande';
+select.name = `etat_commande_${commande.id_commande}`;
 select.className = 'form-control';
 
 // Add options for state names
@@ -223,6 +223,33 @@ etatCell.appendChild(select);
       }
     }
     
+    async function saveCommande(commandeId) {
+    const selectElement = document.querySelector(`select[name="etat_commande_${commandeId}"]`);
+    if (!selectElement) {
+        alert('Error: Select element not found');
+        return;
+    }
+    const selectedStateValue = selectElement.value;
+   console.log(selectedStateValue);
+    try {
+        const response = await fetch('/update-commande-state', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ commandeId, selectedStateValue })
+        });
+
+        if (response.ok) {
+            alert('Commande state updated successfully!');
+        } else {
+            alert('Error updating commande state');
+        }
+    } catch (error) {
+        console.error('Error updating commande state:', error);
+    }
+}
+
     </script>
     
       <!-- Footer Start -->

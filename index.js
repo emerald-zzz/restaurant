@@ -134,7 +134,7 @@ app.get('/get-commandes', async (req, res) => {
       SELECT cp.id_commande, p.nom, p.prix, cp.quantite, ec.nom AS etat
       FROM commande_produit cp
       INNER JOIN produit p ON cp.id_produit = p.id_produit
-      INNER JOIN etat_commande ec ON ec.id_etat_commande = 1
+      INNER JOIN etat_commande ec ON cp.id_commande = ec.id_etat_commande
     `);
 
     res.json({ commandes });
@@ -165,7 +165,29 @@ app.delete('/delete-commande/:id', async (req, res) => {
     res.status(500).json({ error: 'Erreur lors de la suppression de la commande' });
   }
 });
+app.post('/update-commande-state', async (req, res) => {
+  const { commandeId, selectedStateValue } = req.body;
 
+  try {
+    const connection = await connectionPromise;
+
+    // Convert selectedStateValue to an integer
+    const selectedStateId = parseInt(selectedStateValue, 10);
+
+    // Update the state of the commande
+    const updateCommandeStateQuery = `
+      UPDATE commande
+      SET id_etat_commande = ?
+      WHERE id_commande = ?
+    `;
+    await connection.run(updateCommandeStateQuery, [selectedStateId, commandeId]);
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error('Error updating commande state:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
 
