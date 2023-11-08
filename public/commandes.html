@@ -130,7 +130,7 @@
     </div>
     
     <script>
-      document.addEventListener('DOMContentLoaded', async function () {
+     /*  document.addEventListener('DOMContentLoaded', async function () {
         try {
             const response = await fetch('/get-commandes');
             if (response.ok) {
@@ -158,28 +158,6 @@
                     const quantiteCell = row.insertCell(3);
                     const etatCell = row.insertCell(4); // This cell will contain the dropdown
 
-   // Assuming that you are passing `id_etat_command` along with other data
-// when generating the HTML on the server side
-/* 
-const select = document.createElement('select');
-select.name = `etat_commande_${commande.id_commande}`;
-select.className = 'form-control';
-
-const stateNames = ["panier", "cuisine", "livraison", "terminer"];
-stateNames.forEach((stateName, index) => {
-    const option = document.createElement('option');
-    option.value = index + 1;
-    option.textContent = stateName;
-
-    // Check if this option matches the id_etat_command
-    if (stateName === commande.etat) {
-        option.selected = true;
-    }
-
-    select.appendChild(option);
-});
- 
-etatCell.appendChild(select);*/
 const select = document.createElement('select');
     select.name = `etat_commande_${commande.id_commande}`;
     select.className = 'form-control';
@@ -234,7 +212,95 @@ const select = document.createElement('select');
             console.error('Erreur lors de la récupération des données de la commande:', error);
         }
     });
-    async function deleteCommande(commandeId) {
+
+ */   
+ document.addEventListener('DOMContentLoaded', async function () {
+    try {
+        const response = await fetch('/get-commandes');
+        if (response.ok) {
+            const data = await response.json();
+            const commandes = data.commandes;
+
+            const commandeTable = document.querySelector('#commandeTable tbody');
+            let currentCommandId = null; // Pour suivre l'ID de la commande actuelle
+
+            commandes.forEach(async function (commande, index) {
+                if (commande.id_commande !== currentCommandId) {
+                    // Nouvelle commande, ajoutez une ligne d'en-tête
+                    const headerRow = commandeTable.insertRow();
+                    const headerCell = headerRow.insertCell(0);
+                    headerCell.colSpan = 4; // Fusionnez sur les 3 colonnes
+                    headerCell.textContent = `Order: ${commande.id_commande}`;
+                    currentCommandId = commande.id_commande;
+
+                    // Create a cell for the dropdown
+                    const dropdownCell = headerRow.insertCell(1);
+
+                    // Create the select dropdown for etatCell
+                    const select = document.createElement('select');
+                    select.name = `etat_commande_${commande.id_commande}`;
+                    select.className = 'form-control';
+
+                    // Add options for state names
+                    const stateNames = ["panier", "cuisine", "livraison", "terminer"];
+                    for (let i = 0; i < stateNames.length; i++) {
+                        const option = document.createElement('option');
+                        option.value = i + 1; // Use 1-based indexing
+                        option.textContent = stateNames[i];
+
+                        select.appendChild(option);
+                    }
+
+                    // Fetch the current state for the commande
+                    const response = await fetch(`/get-etat-commande/${commande.id_commande}`);
+                    const data = await response.json();
+                    const currentEtat = data.currentEtat;
+
+                    // Set the default selected option based on the current state
+                    select.value = currentEtat;
+
+                    dropdownCell.appendChild(select);
+
+                    // Create a cell for buttons
+                    const buttonCell = headerRow.insertCell(2);
+
+                    // Bouton de sauvegarde
+                    const saveButton = document.createElement('button');
+                    saveButton.textContent = 'save';
+                    saveButton.className = 'btn btn-primary';
+                    saveButton.addEventListener('click', () => saveCommande(commande.id_commande));
+                    buttonCell.appendChild(saveButton);
+
+                    // Bouton de suppression
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Supprimer';
+                    deleteButton.className = 'btn btn-danger';
+                    deleteButton.addEventListener('click', () => deleteCommande(commande.id_commande));
+                    buttonCell.appendChild(deleteButton);
+                }
+
+                // Ajoutez une ligne pour chaque produit de la commande
+                const row = commandeTable.insertRow();
+                const idCell = row.insertCell(0);
+                const nomCell = row.insertCell(1);
+                const prixCell = row.insertCell(2);
+                const quantiteCell = row.insertCell(3);
+
+                idCell.textContent = commande.id;
+                nomCell.textContent = commande.nom;
+                prixCell.textContent = commande.prix;
+                quantiteCell.textContent = commande.quantite;
+            });
+        } else {
+            console.error('Erreur lors de la récupération des données de la commande:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Erreur lors de la récupération des données de la commande:', error);
+    }
+});
+
+
+ async function deleteCommande(commandeId) {
       try {
         const response = await fetch(`/delete-commande/${commandeId}`, {
           method: 'DELETE',
