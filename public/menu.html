@@ -186,56 +186,63 @@
           
             // Function to fetch product data from the server
             async function fetchProducts() {
-              try {
-                const response = await fetch('/get-products'); // Make an HTTP GET request to the server
-                if (response.ok) {
-                  const data = await response.json();
-                  const products = data.products;
-          
-                  const menuContainer = document.getElementById('menu-container');
-          
-                  products.forEach((product) => {
-                    const productDiv = document.createElement('div');
-                    productDiv.classList.add('col-lg-6');
-          
-                    productDiv.innerHTML = `
-                      <div class="d-flex align-items-center">
-                        <img class="flex-shrink-0 img-fluid rounded" src="uploads/${product.nom}.jpg" alt="${product.nom}" style="width: 80px;">
-                        <div class="w-100 d-flex flex-column text-start ps-4">
-                          <h5 class="d-flex justify-content-between border-bottom pb-2">
+    try {
+        const response = await fetch('/get-products'); // Make an HTTP GET request to the server
+        if (response.ok) {
+            const data = await response.json();
+            const products = data.products;
+
+            const menuContainer = document.getElementById('menu-container');
+            let currentRow = document.createElement('div');
+            currentRow.classList.add('row');
+
+            products.forEach((product, index) => {
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('col-md-6'); // Bootstrap class for 3 columns on medium screens
+
+                productDiv.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <img class="flex-shrink-0 img-fluid rounded" src="uploads/${product.nom}.jpg" alt="${product.nom}" style="width: 80px;">
+                    <div class="w-100 d-flex flex-column text-start ps-4">
+                        <h5 class="d-flex justify-content-between border-bottom pb-2">
                             <span>${product.nom}</span>
                             <span class="text-primary">$${product.prix}</span>
-                          </h5>
-                          <small class="fst-italic">details...</small>
-                          <div class="d-flex align-items-center mt-2">
+                        </h5>
+                        <div class="d-flex align-items-center mt-2">
                             <div class="quantity">
-                              <button class="minus">-</button>
-                              <input type="number" step="1" min="1" max="99" name="quantity" value="1">
-                              <button class="plus">+</button>
+                                <button class="btn btn-link minus"><i class="fas fa-minus"></i></button>
+                                <input type="number" step="1" min="1" max="99" name="quantity" value="1">
+                                <button class="btn btn-link plus"><i class="fas fa-plus"></i></button>
                             </div>
-                            
-                            <a class="btn btn-primary ms-3 add-to-cart-button" data-product-id="${product.id}">
-                             <i class="bi bi-cart-plus"></i> Add to Cart
-                        </a>
-
-                          </div>
+                            <div class="ms-auto">
+                                <a class="btn btn-primary rounded-0 add-to-cart-button" data-product-id="${product.id}">
+                                    <i class="bi bi-cart-plus fs-4"></i>
+                                </a>
+                            </div>
                         </div>
-                      </div>
-                    `;
-          
-                    menuContainer.appendChild(productDiv);
-          
-                    // Initialize the quantity counter for this product
-                    setupQuantityCounter(productDiv);
-                  });
-                } else {
-                  console.error('Error fetching product data');
+                    </div>
+                </div>
+                `;
+
+                currentRow.appendChild(productDiv);
+
+                if ((index + 1) % 2 === 0 || index === products.length - 1) {
+                    menuContainer.appendChild(currentRow);
+                    currentRow = document.createElement('div');
+                    currentRow.classList.add('row');
                 }
-              } catch (error) {
-                console.error('Error fetching product data:', error);
-              }
-            }
-           
+
+                // Initialize the quantity counter for this product
+                setupQuantityCounter(productDiv);
+            });
+        } else {
+            console.error('Error fetching product data');
+        }
+    } catch (error) {
+        console.error('Error fetching product data:', error);
+    }
+}
+
             // Call the function to fetch and display products when the page loads
             window.addEventListener('load', fetchProducts);
           </script>

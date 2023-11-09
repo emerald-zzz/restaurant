@@ -264,19 +264,20 @@ const select = document.createElement('select');
                     // Create a cell for buttons
                     const buttonCell = headerRow.insertCell(2);
 
-                    // Bouton de sauvegarde
-                    const saveButton = document.createElement('button');
-                    saveButton.textContent = 'save';
-                    saveButton.className = 'btn btn-primary';
-                    saveButton.addEventListener('click', () => saveCommande(commande.id_commande));
-                    buttonCell.appendChild(saveButton);
+                    // Bouton de sauvegarde avec icône de disquette
+const saveButton = document.createElement('button');
+saveButton.innerHTML = '<i class="fas fa-save"></i>';
+saveButton.className = 'btn btn-primary';
+saveButton.addEventListener('click', () => saveCommande(commande.id_commande));
+buttonCell.appendChild(saveButton);
 
-                    // Bouton de suppression
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'Supprimer';
-                    deleteButton.className = 'btn btn-danger';
-                    deleteButton.addEventListener('click', () => deleteCommande(commande.id_commande));
-                    buttonCell.appendChild(deleteButton);
+// Bouton de suppression avec icône de poubelle
+const deleteButton = document.createElement('button');
+deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+deleteButton.className = 'btn btn-danger';
+deleteButton.addEventListener('click', () => deleteCommande(commande.id_commande));
+buttonCell.appendChild(deleteButton);
+
                 }
 
                 // Ajoutez une ligne pour chaque produit de la commande
